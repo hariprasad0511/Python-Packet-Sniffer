@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import socket
 from general import *
 from networking.ethernet import Ethernet
@@ -27,13 +29,18 @@ def main():
         raw_data, addr = conn.recvfrom(65535)
         pcap.write(raw_data)
         eth = Ethernet(raw_data)
-
+        file = open("output_ETHERNET.txt","a+")
+        file.write(str(eth))
+        file.close()
         print('\nEthernet Frame:')
         print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(eth.dest_mac, eth.src_mac, eth.proto))
 
         # IPv4
         if eth.proto == 8:
             ipv4 = IPv4(eth.data)
+            file = open("output_IPV4.txt","a+")
+            file.write(str(ipv4))
+            file.close()
             print(TAB_1 + 'IPv4 Packet:')
             print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {},'.format(ipv4.version, ipv4.header_length, ipv4.ttl))
             print(TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(ipv4.proto, ipv4.src, ipv4.target))
@@ -41,6 +48,9 @@ def main():
             # ICMP
             if ipv4.proto == 1:
                 icmp = ICMP(ipv4.data)
+                file = open("output_ICMP.txt","a+")
+                file.write(str(icmp))
+                file.close()
                 print(TAB_1 + 'ICMP Packet:')
                 print(TAB_2 + 'Type: {}, Code: {}, Checksum: {},'.format(icmp.type, icmp.code, icmp.checksum))
                 print(TAB_2 + 'ICMP Data:')
@@ -49,6 +59,9 @@ def main():
             # TCP
             elif ipv4.proto == 6:
                 tcp = TCP(ipv4.data)
+                file = open("output_TCP.txt","a+")
+                file.write(str(tcp))
+                file.close()
                 print(TAB_1 + 'TCP Segment:')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(tcp.src_port, tcp.dest_port))
                 print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(tcp.sequence, tcp.acknowledgment))
@@ -63,6 +76,9 @@ def main():
                         print(TAB_2 + 'HTTP Data:')
                         try:
                             http = HTTP(tcp.data)
+                            file = open("output_HTTP.txt","a+")
+                            file.write(str(http))
+                            file.close()
                             http_info = str(http.data).split('\n')
                             for line in http_info:
                                 print(DATA_TAB_3 + str(line))
@@ -75,6 +91,9 @@ def main():
             # UDP
             elif ipv4.proto == 17:
                 udp = UDP(ipv4.data)
+                file = open("output_UDP.txt","a+")
+                file.write(str(udp))
+                file.close()
                 print(TAB_1 + 'UDP Segment:')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(udp.src_port, udp.dest_port, udp.size))
 
